@@ -2,6 +2,11 @@ from __future__ import annotations
 import argparse, csv, hashlib, os, uuid
 from pathlib import Path
 from typing import List, Dict, Tuple
+from dotenv import load_dotenv
+load_dotenv()   # .env 자동 로드
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+UPSTAGE_API_KEY = os.getenv("UPSTAGE_API_KEY")
 
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qm
@@ -118,6 +123,10 @@ def _ensure_collection(client: QdrantClient, name: str, dim: int):
             vectors_config=qm.VectorParams(size=dim, distance=qm.Distance.COSINE),
         )
 
+def point_id_from_url(url: str) -> str:
+    # URL 기반 안정적 UUID (형식: 8-4-4-4-12, 예: 123e4567-e89b-12d3-a456-426614174000)
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, url))
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv",           default=str(PAGES_CSV))
@@ -164,7 +173,7 @@ def main():
         batch = []
 
     for i, v in enumerate(vectors):
-        batch.append(qm.PointStruct(id=ids[i], vector=v, payload=metas[i]))
+        batch.append(qm.PointStruct(id=point_id_from_url(metas[i]["url"]), vector=v, payload=metas[i]))
         if len(batch) >= args.upsert_batch:
             flush()
     flush()
