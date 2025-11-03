@@ -6,6 +6,7 @@ __pycache__/
 # Environment (API keys etc.)
 .env
 
+
 # Qdrant local storage
 qdrant_storage/
 
