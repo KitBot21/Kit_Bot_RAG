@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <base href="https://www.kumoh.ac.kr/dorm/restaurant_menu_reg.do?mode=edit&pager.offset=0&pagerLimit=10&sqRestaurant=2104"/>
+  <title>생활관 > 생활관안내 > 금주의 식단 등록</title>
+</head>
+<body>
+  <div class="meta">Fetched at: 2025-09-23T17:21:42</div>
+  <div class="content-wrap">
+<div class="cont-top">
+<h2 class="cont-title">금주의 식단<span class="arrow"></span></h2>
+</div>
+<div class="content" id="jwxe_main_content">
+
+<div class="ko">
+<div class="board-area">
+<form action="?mode=&amp;pager.offset=0&amp;pagerLimit=10" enctype="multipart/form-data" method="post" name="writeForm">
+<div class="common-board board-write" id="ko">
+<input name="mode" type="hidden" value="update"/>
+<input name="csrfToken" type="hidden" value=""/>
+<input name="createId" type="hidden" value=""/>
+<input name="sqRestaurant" type="hidden" value="2104"/>
+<input name="campusType" type="hidden" value="2"/>
+<fieldset>
+<legend>식당 메뉴 게시판 작성</legend>
+<table class="tb-write">
+<caption>식당 메뉴 게시판</caption>
+<colgroup>
+<col style="width:20%"/>
+<col/>
+</colgroup>
+<tbody>
+<tr>
+<th scope="col">카테고리</th>
+<td>
+<input class="jwvalid-must-restaurantCategory" disabled="disabled" id="ctgr1" name="restaurantCategory" type="radio" value="RESTAURANT_C"/>
+<label for="ctgr1">푸름관</label>
+<input checked="checked" class="jwvalid-must-restaurantCategory" id="ctgr2" name="restaurantCategory" type="radio" value="RESTAURANT_D"/>
+<label for="ctgr2">오름관1동</label>
+<input class="jwvalid-must-restaurantCategory" disabled="disabled" id="ctgr3" name="restaurantCategory" type="radio" value="RESTAURANT_E"/>
+<label for="ctgr3">오름관3동</label>
+</td>
+</tr>
+<tr>
+<th scope="col">기간(일주일 단위)</th>
+<td>
+<input class="calendar datepicker week-picker jwvalid-must-period" id="period" maxlength="10" name="period" title="기간" type="text" value="2025-09-15~2025-09-21"/>
+</td>
+</tr>
+<tr>
+<td class="add-delete-box" colspan="2">
+<p>항목  시, 추가 버튼을 눌러주시기 바랍니다.</p>
+<a class="btn-add" href="#n" onclick="return false;">추가</a>
+</td>
+</tr>
+</tbody>
+</table>
+</fieldset>
+</div>
+<div class="common-board board-write" id="ko">
+<input name="sqMenu" type="hidden" value="3601"/>
+<fieldset class="content-search-wrap">
+<legend class="hide"> 게시판 작성</legend>
+<table class="tb-write">
+<caption></caption>
+<colgroup>
+<col style="width:20%"/>
+<col/>
+</colgroup>
+<tbody>
+<tr>
+<th scope="col">선택</th>
+<td>
+<select class="wr-sel jwvalid-must-mealCategory" name="mealCategory" title="항목 선택">
+<option value="B">조식</option>
+<option selected="selected" value="L">중식</option>
+<option value="D">석식</option>
+</select>
+</td>
+</tr>
+<tr class="hide">
+<th scope="col">메뉴</th>
+</tr>
+<tr>
+<td colspan="2">
+<ul class="menu-write">
+<li>
+<strong>월</strong>
+<textarea name="menuNmMon" title="월요일 메뉴">백미밥
+오징어바지락국
+쇠고기불고기
+두부스틱강정
+토토리묵참나물무침
+배추김치</textarea>
+</li>
+<li>
+<strong>화</strong>
+<textarea name="menuNmTue" title="화요일 메뉴">날치알후리카게밥
+소면(면기)
+크림치즈고로케/케찹
+오복채무침&amp;오이고추된장무침
+배추김치
+쿨피스</textarea>
+</li>
+<li>
+<strong>수</strong>
+<textarea name="menuNmWed" title="수요일 메뉴">백미밥
+꼬지어묵국
+등심돈가스/소스
+방울꿀떡볶음
+단호박샐러드&amp;양상추샐러드/레몬마요소스
+배추김치
+오렌지주스</textarea>
+</li>
+<li>
+<strong>목</strong>
+<textarea name="menuNmThu" title="목요일 메뉴">백미밥
+건새우아욱국
+쭈돈불고기
+옥수수전&amp;유채전&amp;메밀전/초간장
+참나물무생채
+배추김치</textarea>
+</li>
+<li>
+<strong>금</strong>
+<textarea name="menuNmFri" title="금요일 메뉴">볶음밥/짜장소스
+계란국
+과일탕수육
+단무지&amp;깐양파/춘장
+양배추샐러드/아일랜드드레싱
+배추김치
+퓨레주청귤</textarea>
+</li>
+<li>
+<strong>토</strong>
+<textarea name="menuNmSat" title="토요일 메뉴">백미밥
+시락국
+닭갈비
+대왕김말이튀김
+브로컬리두부무침
+배추김치</textarea>
+</li>
+<li>
+<strong>일</strong>
+<textarea name="menuNmSun" title="일요일 메뉴">백미밥
+사골떡만두국(뚝)
+오징어카츠/와사비마요소스
+달걀찜
+양배추오이무침
+배추김치</textarea>
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td class="add-delete-box" colspan="2">
+<p>항목 삭제 시, 삭제 버튼을 눌러주시기 바랍니다.</p>
+<a class="btn-delete" href="#n" onclick="return false;">삭제</a>
+</td>
+</tr>
+</tbody>
+</table>
+</fieldset>
+</div>
+<div class="common-board board-write" id="ko">
+<input name="sqMenu" type="hidden" value="3602"/>
+<fieldset class="content-search-wrap">
+<legend class="hide"> 게시판 작성</legend>
+<table class="tb-write">
+<caption></caption>
+<colgroup>
+<col style="width:20%"/>
+<col/>
+</colgroup>
+<tbody>
+<tr>
+<th scope="col">선택</th>
+<td>
+<select class="wr-sel jwvalid-must-mealCategory" name="mealCategory" title="항목 선택">
+<option value="B">조식</option>
+<option value="L">중식</option>
+<option selected="selected" value="D">석식</option>
+</select>
+</td>
+</tr>
+<tr class="hide">
+<th scope="col">메뉴</th>
+</tr>
+<tr>
+<td colspan="2">
+<ul class="menu-write">
+<li>
+<strong>월</strong>
+<textarea name="menuNmMon" title="월요일 메뉴">우엉채비빔밥/비빔장
+된장국
+매콤떡갈비구이
+멸치아몬드볶음
+모듬야채스틱/쌈장
+배추김치
+식혜</textarea>
+</li>
+<li>
+<strong>화</strong>
+<textarea name="menuNmTue" title="화요일 메뉴">백미밥
+쇠고기무탕국
+꽁치캔김치조림
+화이트고추소스알미트볼
+감자채볶음
+오이소박이</textarea>
+</li>
+<li>
+<strong>수</strong>
+<textarea name="menuNmWed" title="수요일 메뉴">백미밥
+로스팜찌개
+야채찜닭
+잡채어묵강정
+호박새우젓볶음&amp;무말랭이무침
+배추김치</textarea>
+</li>
+<li>
+<strong>목</strong>
+<textarea name="menuNmThu" title="목요일 메뉴">백미밥
+만두전골(뚝)
+돈육폭찹
+비엔나메란장조림
+오이사과무침
+배추김치</textarea>
+</li>
+<li>
+<strong>금</strong>
+<textarea name="menuNmFri" title="금요일 메뉴">백미밥
+닭개장
+돈육새송이장조림
+두부구이/양념장
+치커리연근샐러드/흑임자드레싱
+배추김치</textarea>
+</li>
+<li>
+<strong>토</strong>
+<textarea name="menuNmSat" title="토요일 메뉴">백미밥
+쇠고기미역국
+비비고남도떡갈비
+오징어떡볶음
+깻잎지무침&amp;콩나물무침
+배추김치</textarea>
+</li>
+<li>
+<strong>일</strong>
+<textarea name="menuNmSun" title="일요일 메뉴">백미밥
+들깨무채국
+돈수육김치찜
+햄&amp;소시지전/케찹
+건맛살포조림
+도시락김</textarea>
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td class="add-delete-box" colspan="2">
+<p>항목 삭제 시, 삭제 버튼을 눌러주시기 바랍니다.</p>
+<a class="btn-delete" href="#n" onclick="return false;">삭제</a>
+</td>
+</tr>
+</tbody>
+</table>
+</fieldset>
+</div>
+</form>
+
+
+</div>
+</div>
+</div>
+</div>
+  <hr/>
+  <div class="meta">Snapshot of <a href="https://www.kumoh.ac.kr/dorm/restaurant_menu_reg.do?mode=edit&pager.offset=0&pagerLimit=10&sqRestaurant=2104">https://www.kumoh.ac.kr/dorm/restaurant_menu_reg.do?mode=edit&pager.offset=0&pagerLimit=10&sqRestaurant=2104</a></div>
+</body>
+</html>

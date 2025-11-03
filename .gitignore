@@ -1,0 +1,19 @@
+﻿# Python venv
+.venv/
+__pycache__/
+*.pyc
+
+# Qdrant local storage
+qdrant_storage/
+
+# Node
+node_modules/
+
+# Cache
+*.pyc
+*.pyo
+*.DS_Store
+
+# IDE stuff
+.vscode/
+.idea/
