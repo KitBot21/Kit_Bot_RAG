@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <base href="https://www.kumoh.ac.kr/ko/campusMap2.do"/>
+  <title>국립금오공과대학교 | 대학소개 | 캠퍼스안내 | 캠퍼스 맵</title>
+</head>
+<body>
+  <div class="meta">Fetched at: 2025-09-23T16:55:42</div>
+  <body style="opacity: 1">
+<!-- skip navigation -->
+<p class="skip-navigation">
+<a href="#jwxe_main_content">본문 바로가기</a>
+</p>
+<!--
+	<div class="wrapper" id="wrapper">
+	-->
+<div class="map-outer">
+<div class="map-header">
+<h1>
+<a href="/ko/index.do" title="Kumoh National Institute of Technology">
+<img alt="금오공과대학교 Kumoh National Institute of Technology" src="/_res/ko/img/common/logo@2x.png"/>
+</a>
+</h1>
+<!-- 
+<ul class="map-link">
+	<li class=" on">
+		<a href="#" data-key="1" class="campus">서울캠퍼스</a>
+	</li>
+	<li class="">
+		<a href="#" data-key="2" class="campus">2캠퍼스(천안)</a>
+	</li>
+</ul>
+
+<ul class="map-tab">
+	
+</ul>
+
+ -->
+</div>
+<div class="map-contents">
+
+
+
+<div class="ko">
+<div id="simple-app" x-ng-controller="appCtrl as app">
+<aside class="map-search">
+<form class="search_form" name="searchForm" novalidate="" x-ng-submit="app.getList()">
+<fieldset>
+<legend>건물 및 편의시설 검색조건</legend>
+<input id="campusCd" name="campusCd" type="hidden" value="" x-ng-model="app.searchData.campusCd"/>
+<div class="campusmap-search-wrapper">
+<label class="hidden" for="search_val">검색어를 입력해 주세요</label>
+<input id="search_val" name="srSearchValue" title="검색어를 입력하세요" type="search" x-ng-model="app.searchData.srSearchValue"/>
+<button class="btn-campusmap-search" title="검색"><img alt="검색" src="/_res/img/campusmap/ic-map-search@2x.png"/></button>
+<button class="btn-campusmap-reset" title="초기화" x-ng-click="app.refresh()"><img alt="초기화" src="/_res/img/campusmap/ic-map-reset@2x.png"/></button>
+</div>
+<p class="notice-campusmap">
+			건물, 학과, 편의시설, 기관을 검색합니다.		
+		</p>
+<p x-ng-bind-html="app.searchHtml">
+</p>
+</fieldset>
+</form>
+<ul class="map-search-list">
+<li x-ng-repeat="item in app.list track by $index">
+<a href="#n" x-ng-click="app.clickBuild($event, item)">
+<span class="count"><img src="/_res/img/campusmap/mk.png" x-ng-src="/_res/img/campusmap/mk{{$index + 1 &lt; 10 ? '0' + ($index + 1): $index + 1}}.png"/></span>
+<span class="name" x-ng-bind="'ko' == app.locale ? item.koNm.toUpperCase() : (item.enNm ? item.enNm : item.koNm.toUpperCase() ) "></span>
+</a>
+</li>
+</ul>
+</aside>
+<div class="map-open">
+<a class="btn" closestr="닫기" href="#a" openstate="close" openstr="열기">
+<span>닫기</span>
+</a>
+</div>
+<div class="map">
+<div class="cMore_popupwrap"></div>
+<div id="map" style="width:100%;"></div>
+<div id="roadView" style="display:none;width:100%;">
+<div class="roadViewCloseWrap"><a href="#" onclick="closeRoadView()"><img alt="로드뷰닫기버튼" src="/_common/img/campusmap/bg-btn-vr01.png"/></a></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<noscript><p>이 사이트는 자바스크립트를 지원하지 않으면 정상적으로 보이지 않을수 있습니다.</p></noscript>
+</body>
+  <hr/>
+  <div class="meta">Snapshot of <a href="https://www.kumoh.ac.kr/ko/campusMap2.do">https://www.kumoh.ac.kr/ko/campusMap2.do</a></div>
+</body>
+</html>
