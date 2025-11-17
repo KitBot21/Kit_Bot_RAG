@@ -1,0 +1,57 @@
+domain: "www.kumoh.ac.kr"
+start_url: null
+sitemap_index: "https://www.kumoh.ac.kr/sitemap_index.xml"   # 그대로 둬도 됨 (필터가 다 걸러냄)
+
+# 특정 섹션만 먼저 크롤링하고 싶으면 집합으로 제한하세요.
+# 전체 섹션을 크롤링하려면 null 로 두세요.
+# ko: 학교 메인 홈페이지
+# bus: 대구 통학버스
+# dorm: 기숙사
+allow_sections: ["ko","bus","dorm"]
+
+# 로그인 해야하는 페이지
+block_login_pages: true
+
+# 다운로드(첨부) 관련 정책: metadata_only | allowlist | blocklist
+attachment_policy: "blocklist"
+attachment_allow_prefixes: []  # allowlist 모드일 때만 사용
+attachment_block_prefixes: ["/cms/fileDownload.do"]
+
+allowed_path_prefixes: [
+    # 식당 메뉴(덮어쓰기 대상)
+  "/ko/restaurant01.do",
+  "/ko/restaurant02.do",
+  "/ko/restaurant04.do",
+  "/ko/restaurant05.do",
+  "/dorm/restaurant_menu01.do",
+  "/dorm/restaurant_menu02.do",
+  "/dorm/restaurant_menu03.do",
+]
+
+# 크롤링 안전장치
+max_pages: 300000
+request_timeout_sec: 10
+request_sleep_sec: 0.7          # robots.txt의 crawl-delay와 비교해 큰 값을 사용
+user_agent: "KITBot (CSEcapstone, contact: cdh5113@naver.com)"
+
+# 저장소: filesystem | mongodb
+storage: "filesystem"
+
+# # MongoDB (storage: mongodb 일 때 사용)
+# mongodb_uri: "mongodb://localhost:27017"
+# mongodb_db: "kitbot"
+
+# 로그
+log_path: "../data/errors.log"
+
+pii_policy:
+  redact_email: true
+
+block_login_pages: true
+attachment_policy: "blocklist"
+
+# 크롤링하지 않는 주소
+deny_patterns:
+  - "/login"
+  - "/restaurant_menu_reg"
+  - "/restaurant_reg"

@@ -1,0 +1,122 @@
+# 최적화된 크롤러 설정
+# - JSON 저장
+# - 2021년 이후 데이터만
+# - 품질 필터링
+# - 로그인 페이지 자동 스킵
+
+start_url: "https://www.kumoh.ac.kr/ko/index.do?sso=ok"
+domain: "www.kumoh.ac.kr"
+
+# Sitemap (날짜 정보 활용)
+sitemap_index: "https://www.kumoh.ac.kr/sitemap_index.xml"
+
+# 크롤링할 섹션
+allow_sections: ["ko", "bus", "dorm"]
+allowed_path_prefixes: ["/ko/", "/bus/notice.do", "/dorm/"]
+
+# 로그인 페이지 차단
+block_login_pages: true
+
+# 첨부파일 정책
+attachment_policy: "blocklist"
+attachment_allow_prefixes: []
+attachment_block_prefixes: ["/cms/fileDownload.do"]
+
+# 크롤링 제한
+max_pages: 300000
+request_timeout_sec: 10
+request_sleep_sec: 0.7
+user_agent: "KITBot/2.0 (CSEcapstone, contact: cdh5113@naver.com)"
+
+# 저장소: json 또는 filesystem
+storage: "json"
+json_output_dir: "../data/crawled_json"
+json_pretty_print: false  # false = 압축, true = 가독성
+
+# 로그
+log_path: "../data/crawler.log"
+
+# PII 정책
+pii_policy:
+  redact_email: true
+
+# 제외 패턴
+deny_patterns:
+  - "/login"
+  - "/signin"
+  - "/auth"
+  - "/restaurant_menu_reg"
+  - "/restaurant_reg"
+  - "/popup"
+  - "/print"
+  - "/share"
+  - "/download"
+  - "/search"
+
+# === 새로 추가된 필터 ===
+
+# 날짜 필터 (2021년 이후만)
+date_filter:
+  enabled: true
+  cutoff_date: "2021-01-01"
+
+# 품질 필터 (너무 짧거나 내용 없는 페이지 제외)
+quality_filter:
+  enabled: true
+  min_text_length: 100      # 최소 100자
+  max_text_length: 500000   # 최대 50만자
+  min_word_count: 20        # 최소 20단어
+  
+  # 스킵할 에러 페이지 패턴
+  skip_patterns:
+    - "404"
+    - "Not Found"
+    - "페이지를 찾을 수 없습니다"
+    - "접근 권한이 없습니다"
+    - "Access Denied"
+    - "로그인이 필요합니다"
+    - "세션이 만료되었습니다"
+
+# 본문 추출 설정 (NEW!)
+content_extraction:
+  enabled: true
+  keep_links: true          # 링크 텍스트 유지
+  keep_images: false        # 이미지 alt 텍스트는 제거
+  # 커스텀 제거 요소들 (CSS 선택자)
+  custom_remove_selectors:
+    - "div.top-banner"
+    - "div.quick-menu"
+    - "#util-menu"
+    - ".advertisement"
+  # 본문 영역을 강제 지정 (비어있으면 자동 탐지)
+  main_content_selector: null  # 예: "div.board-content"
+
+# 로그인 페이지 감지 강화
+login_detection:
+  enabled: true
+  # URL에 포함되면 스킵
+  url_patterns:
+    - "/login"
+    - "/signin"
+    - "/auth"
+    - "/sso"
+    - "loginForm"
+  
+  # 페이지 내용에 포함되면 스킵
+  content_patterns:
+    - "아이디"
+    - "비밀번호"
+    - "로그인"
+    - "login"
+    - "password"
+    - "username"
+    - "sign in"
+  
+  min_pattern_matches: 2  # 최소 2개 이상 매칭
+
+# 출력 설정
+output:
+  format: "json"  # json 또는 html
+  include_metadata: true
+  include_html: true  # 원본 HTML 포함 여부
+  compress: true  # gzip 압축 (옵션)

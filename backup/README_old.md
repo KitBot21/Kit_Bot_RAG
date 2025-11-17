@@ -1,56 +1,6 @@
-# 🤖 Kit_Bot_RAG
+# Kit_Bot_RAG
 
-금오공과대학교 AI 챗봇 시스템 (RAG 기반)
-
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.1+-green.svg)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
----
-
-## 📊 시스템 현황
-
-- **문서 수**: 16,106개 청크
-- **임베딩**: BGE-M3 (1024차원)
-- **벡터 DB**: Qdrant (16,106개 벡터)
-- **LLM**: OpenAI GPT-4o-mini
-- **성능**: 
-  - Retrieval Top-5: 72.5% (B+)
-  - Generation: 4.75/5.0 (A)
-  - Overall: A- (87/100)
-
----
-
-## 🚀 빠른 시작
-
-### 1️⃣ 웹 데모 실행 (권장)
-
-```bash
-# 1. 가상환경 활성화
-source .venv/bin/activate
-
-# 2. Flask 설치 (최초 1회)
-pip install flask flask-cors
-
-# 3. 서버 실행
-python3 app.py
-
-# 4. 브라우저에서 접속
-# 현재 컴퓨터: http://localhost:5000
-# 다른 컴퓨터: http://202.31.202.216:5000
-```
-
-### 2️⃣ 명령줄 데모
-
-```bash
-# 단일 질문
-python3 rag_demo.py --query "생활관 식사 시간 알려주세요"
-
-# 대화형 모드
-python3 rag_demo.py --interactive
-```
-
----
+금오공과대학교 RAG 챗봇 시스템
 
 ## ⚙️ 환경 설정
 
@@ -69,82 +19,44 @@ pip install --upgrade pip
 # 4. 기본 라이브러리 설치
 pip install sentence-transformers qdrant-client openai python-dotenv pandas
 
-# 5. 웹 서버 라이브러리 설치
-pip install flask flask-cors
-
-# 6. 첨부파일 처리 (선택)
+# 5. 첨부파일 처리 라이브러리 설치 (선택)
 pip install -r requirements-attachments.txt
 ```
 
 **⚠️ 중요:** 모든 Python 명령어는 가상환경 활성화 후 실행하세요!
+- 자세한 가이드: [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)
 
-- **청크 크기**: 1000자 (오버랩 150자)- 자세한 가이드: [docs/ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)
+## 📁 프로젝트 구조
 
-
-
----## 📁 프로젝트 구조
-
-
-
-## 🛠️ 주요 스크립트```
-
+```
 Kit_Bot_RAG/
-
-| 스크립트 | 용도 |├── rag_demo.py                    # 메인 RAG 챗봇 (실행 파일)
-
-|---------|------|├── create_filtered_corpus.py      # 필터링된 corpus 생성
-
-| `rag_demo.py` | RAG 챗봇 실행 |├── data/
-
-| `evaluate_retrieval.py` | 검색 성능 평가 (Recall@K, MRR) |│   ├── corpus_filtered.csv        # 필터링된 HTML 문서 corpus
-
-| `manual_ground_truth_verification.py` | 수동 검증 도구 |│   ├── corpus_attachments.csv     # 첨부파일 corpus
-
-| `quick_verify_sample.py` | 빠른 샘플 테스트 |│   ├── corpus_merged.csv          # 병합된 전체 corpus
-
-| `regenerate_embeddings.py` | 임베딩 재생성 |│   ├── ground_truth.csv           # 평가용 정답 데이터
-
-| `upload_to_qdrant.py` | Qdrant 업로드 |│   ├── queries.txt                # 테스트 쿼리 모음
-
+├── rag_demo.py                    # 메인 RAG 챗봇 (실행 파일)
+├── create_filtered_corpus.py      # 필터링된 corpus 생성
+├── data/
+│   ├── corpus_filtered.csv        # 필터링된 HTML 문서 corpus
+│   ├── corpus_attachments.csv     # 첨부파일 corpus
+│   ├── corpus_merged.csv          # 병합된 전체 corpus
+│   ├── ground_truth.csv           # 평가용 정답 데이터
+│   ├── queries.txt                # 테스트 쿼리 모음
 │   ├── fixtures/                  # HTML 원본 데이터
-
----│   └── attachments/               # 첨부파일 (PDF, Word, Excel 등)
-
+│   └── attachments/               # 첨부파일 (PDF, Word, Excel 등)
 ├── embeddings/
-
-## 📈 성능│   ├── bge_filtered.npy           # BGE 임베딩 벡터
-
+│   ├── bge_filtered.npy           # BGE 임베딩 벡터
 │   ├── bm25_filtered_vectorizer.pkl  # BM25 벡터화기
-
-| Dataset | R@3 | R@5 | MRR |│   └── bm25_filtered_vectors.pkl     # BM25 sparse 벡터
-
-|---------|-----|-----|-----|├── scripts/
-
-| Dev (70) | 90% | 99% | 0.58 |│   ├── clean_corpus.py            # Corpus 정제
-
-| Test (31) | 97% | 97% | 0.65 |│   ├── create_sparse_vectors.py   # Sparse 벡터 생성
-
-| Manual (30) | 93% | 100% | 0.65 |│   ├── embed_providers.py         # 임베딩 제공자
-
+│   └── bm25_filtered_vectors.pkl     # BM25 sparse 벡터
+├── scripts/
+│   ├── clean_corpus.py            # Corpus 정제
+│   ├── create_sparse_vectors.py   # Sparse 벡터 생성
+│   ├── embed_providers.py         # 임베딩 제공자
 │   ├── ingest_multi.py            # Qdrant 업로드
-
-*자동 평가 결과 (circular logic으로 과대평가됨, 실제 성능은 수동 검증 필요)*│   ├── regenerate_embeddings.py   # 임베딩 재생성
-
+│   ├── regenerate_embeddings.py   # 임베딩 재생성
 │   ├── process_attachments.py     # 첨부파일 처리 (NEW)
-
----│   └── merge_corpus.py            # Corpus 병합 (NEW)
-
+│   └── merge_corpus.py            # Corpus 병합 (NEW)
 └── qdrant_storage/                # Qdrant DB 저장소
-
-## 📖 가이드
 
 ```
 
-- 수동 검증: `docs/MANUAL_VERIFICATION_GUIDE.md`
-
-- 환경 설정: `docs/ENVIRONMENT_SETUP.md`## 🚀 사용법
-
-
+## 🚀 사용법
 
 ### 1. RAG 챗봇 실행
 

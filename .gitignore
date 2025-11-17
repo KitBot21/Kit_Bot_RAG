@@ -9,6 +9,17 @@ __pycache__/
 # Qdrant local storage
 qdrant_storage/
 
+# 첨부파일 (용량 문제로 Git에서 제외)
+data/attachments/
+*.pdf
+*.docx
+*.xlsx
+*.pptx
+
+# 생성된 corpus 파일 (선택적)
+# data/corpus_attachments.csv
+# data/corpus_merged.csv
+
 # Node
 node_modules/
 
@@ -20,3 +31,7 @@ node_modules/
 # IDE stuff
 .vscode/
 .idea/
+data/crawled_data/
+data/corpus_zip_attachments.csv
+data/corpus_zip_attachments_clean.csv
+data/corpus_minio_documents.csv

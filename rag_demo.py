@@ -16,7 +16,7 @@ load_dotenv()
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 class RAGSystem:
-    def __init__(self, collection_name='kit_corpus_bge_filtered', 
+    def __init__(self, collection_name='kit_corpus_bge_all', 
                  retriever_model='BAAI/bge-m3',
                  llm_provider='openai',  # 'openai' or 'ollama'
                  llm_model='gpt-4o-mini'):
@@ -55,7 +55,7 @@ class RAGSystem:
         print(f"  🤖 LLM: {llm_provider}/{llm_model}")
         print("✅ RAG 시스템 준비 완료!\n")
     
-    def retrieve(self, query, top_k=3):
+    def retrieve(self, query, top_k=5):
         """
         쿼리와 관련된 문서 검색
         
@@ -66,28 +66,75 @@ class RAGSystem:
         Returns:
             List of (text, score, metadata)
         """
-        # 쿼리 임베딩
-        query_vector = self.retriever.encode(query, normalize_embeddings=True).tolist()
+        # 쿼리 확장: 특정 키워드 강화
+        expanded_query = query
         
-        # Qdrant 검색
+        # 식당명 매핑 (검색 품질 향상)
+        restaurant_keywords = {
+            '분식당': '분식당 일품요리',
+            '교직원식당': '교직원식당 정식',
+            '신평캠퍼스식당': '신평캠퍼스식당',
+            '푸름관': '푸름관 생활관 식당',
+            '오름관': '오름관 생활관 식당'
+        }
+        
+        for keyword, expansion in restaurant_keywords.items():
+            if keyword in query:
+                expanded_query = f"{query} {expansion}"
+                break
+        
+        # 쿼리 임베딩
+        query_vector = self.retriever.encode(expanded_query, normalize_embeddings=True).tolist()
+        
+        # Qdrant 검색 (더 많이 검색 후 필터링)
         search_result = self.qdrant_client.search(
             collection_name=self.collection_name,
             query_vector=query_vector,
-            limit=top_k
+            limit=top_k * 2  # 2배 검색 후 재순위화
         )
         
-        # 결과 포맷팅
+        # 결과 포맷팅 및 재순위화
         results = []
         for hit in search_result:
+            score = hit.score
+            title = hit.payload.get('title', '')
+            
+            # 제목 일치도에 따른 점수 부스트
+            query_lower = query.lower()
+            title_lower = title.lower()
+            
+            # 정확한 키워드 매칭 시 점수 증가
+            if '분식당' in query_lower and '분식당' in title_lower:
+                score *= 1.3
+            elif '교직원식당' in query_lower and '교직원식당' in title_lower:
+                score *= 1.3
+            elif '학생식당' in query_lower and '학생식당' in title_lower:
+                score *= 1.3
+            elif '학사일정' in query_lower and '학사일정' in title_lower:
+                score *= 1.4  # 학사일정은 더 높은 부스트
+            elif ('일정' in query_lower or '학사' in query_lower) and '학사일정' in title_lower:
+                score *= 1.3
+            elif '푸름관' in query_lower and '푸름관' in title_lower:
+                score *= 1.3
+            elif '오름관' in query_lower and '오름관' in title_lower:
+                score *= 1.3
+            elif '신평' in query_lower and '신평' in title_lower:
+                score *= 1.3
+            
             results.append({
                 'text': hit.payload.get('text', ''),
-                'score': hit.score,
+                'score': score,  # 재조정된 점수
+                'original_score': hit.score,  # 원본 점수
                 'chunk_id': hit.payload.get('chunk_id', ''),
-                'title': hit.payload.get('title', ''),
+                'title': title,
                 'url': hit.payload.get('url', '')
             })
         
-        return results
+        # 점수로 재정렬
+        results.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Top-K만 반환
+        return results[:top_k]
     
     def generate(self, query, contexts, stream=False):
         """
@@ -101,6 +148,43 @@ class RAGSystem:
         Returns:
             LLM 생성 답변
         """
+        # 현재 날짜 및 요일 정보 (한국 시간)
+        from datetime import datetime
+        import locale
+        import pytz
+        
+        try:
+            locale.setlocale(locale.LC_TIME, 'ko_KR.UTF-8')
+        except:
+            pass
+        
+        # 한국 시간대 (KST, UTC+9)
+        kst = pytz.timezone('Asia/Seoul')
+        now = datetime.now(kst)
+        
+        # 한국어 요일 매핑
+        weekday_kr = {
+            'Monday': '월요일',
+            'Tuesday': '화요일', 
+            'Wednesday': '수요일',
+            'Thursday': '목요일',
+            'Friday': '금요일',
+            'Saturday': '토요일',
+            'Sunday': '일요일'
+        }
+        weekday_en = now.strftime('%A')
+        weekday = weekday_kr.get(weekday_en, weekday_en)
+        
+        today_info = f"{now.strftime('%Y년 %m월 %d일')} ({weekday})"
+        
+        # 다음주 월요일 계산
+        from datetime import timedelta
+        days_until_next_monday = (7 - now.weekday()) % 7
+        if days_until_next_monday == 0:
+            days_until_next_monday = 7
+        next_monday = now + timedelta(days=days_until_next_monday)
+        next_monday_info = f"{next_monday.strftime('%Y년 %m월 %d일')} ({weekday_kr.get(next_monday.strftime('%A'), next_monday.strftime('%A'))})"
+        
         # 컨텍스트 문자열 생성 (출처 정보 포함)
         context_str = "\n\n".join([
             f"[문서 {i+1}]\n제목: {ctx.get('title', '제목없음')}\n내용: {ctx['text']}" 
@@ -108,8 +192,14 @@ class RAGSystem:
         ])
         
         # 프롬프트 구성 (개선된 버전)
-        system_prompt = """당신은 금오공과대학교 학생들을 돕는 친절하고 전문적인 AI 어시스턴트 Kit_Bot입니다.
+        system_prompt = f"""당신은 금오공과대학교 학생들을 돕는 친절하고 전문적인 AI 어시스턴트 Kit_Bot입니다.
 제공된 문서 정보를 바탕으로 정확하고 상세하며 도움이 되는 답변을 제공하세요.
+
+**현재 날짜**: {today_info} (현재 요일 코드: {now.weekday()}, 0=월요일, 6=일요일)
+**다음주 월요일**: {next_monday_info}
+- 질문에 "오늘", "이번주" 등의 시간 표현이 있으면 위 날짜를 기준으로 답변하세요
+- "다음주 월요일"은 {next_monday_info}입니다
+- 요일별 정보가 필요하면 현재 요일을 참고하세요
 
 답변 작성 가이드라인:
 1. **정확성**: 제공된 문서에 있는 정보만을 사용하여 답변하세요
@@ -135,6 +225,20 @@ class RAGSystem:
 <학생 질문>
 {query}
 </학생 질문>
+
+**중요 가이드**:
+- **식당 메뉴** 질문의 경우: 문서에서 요일별 메뉴를 구분하여 답변하세요
+  예: "[ 월(11.03) | 화(11.04) | ... ]" 형식에서 현재 날짜에 해당하는 요일의 메뉴만 추출
+  각 " | " 구분자로 요일이 나뉘어져 있습니다
+- 메뉴 항목은 쉼표나 공백 없이 붙어있을 수 있으니 의미 단위로 구분하세요
+  예: "돈코츠라멘육회비빔밥라면류" → "돈코츠라멘, 육회비빔밥, 라면류"
+
+- **학사일정** 질문의 경우: 문서 형식이 "번호 제목 시작일 종료일 등록일 조회" 패턴입니다
+  예: "365 군복무 중 취득학점 등 외부기관 학점 인정 신청 2025-10-01 2025-10-03 2024-11-27 0"
+  → 제목: 군복무 중 취득학점 등 외부기관 학점 인정 신청
+  → 기간: 2025-10-01 ~ 2025-10-03
+- 날짜별로 정리하여 일정을 명확하게 제시하세요
+- 같은 날짜의 일정이 여러 개면 모두 나열하세요
 
 답변:"""
         
@@ -207,6 +311,21 @@ class RAGSystem:
             print(f"💬 답변:")
             print(f"{'='*80}")
             print(answer)
+            
+            # 출처 정보 추가
+            print(f"\n{'='*80}")
+            print(f"📎 출처:")
+            print(f"{'='*80}")
+            unique_sources = {}
+            for ctx in contexts:
+                url = ctx.get('url', '')
+                title = ctx.get('title', '')
+                if url and url not in unique_sources:
+                    unique_sources[url] = title
+            
+            for i, (url, title) in enumerate(unique_sources.items(), 1):
+                print(f"{i}. {title}")
+                print(f"   {url}")
             print(f"{'='*80}\n")
         
         return {

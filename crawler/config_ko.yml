@@ -1,0 +1,61 @@
+domain: "www.kumoh.ac.kr"
+start_url: null
+sitemap_index: "https://www.kumoh.ac.kr/sitemap_index.xml"   # 그대로 둬도 됨 (필터가 다 걸러냄)
+
+# 특정 섹션만 먼저 크롤링하고 싶으면 집합으로 제한하세요.
+# 전체 섹션을 크롤링하려면 null 로 두세요.
+# ko: 학교 메인 홈페이지
+# bus: 대구 통학버스
+# dorm: 기숙사
+allow_sections: ["ko","bus","dorm"]
+
+# 로그인 해야하는 페이지
+block_login_pages: true
+
+# 다운로드(첨부) 관련 정책: metadata_only | allowlist | blocklist
+attachment_policy: "blocklist"
+attachment_allow_prefixes: []  # allowlist 모드일 때만 사용
+attachment_block_prefixes: ["/cms/fileDownload.do"]
+
+allowed_path_prefixes: [
+  # KO 게시판들(누적)
+  "/ko/sub01_02_03.do",      # 업무추진비 사용내역
+  "/ko/sub01_05_01.do",      # KIT Projects
+  "/ko/sub01_05_04.do",      # 보도자료
+  "/ko/sub06_01_01_01.do",   # 공지사항 학사안내
+  "/ko/sub06_01_01_02.do",   # 공지사항 행사안내
+  "/ko/sub06_01_01_03.do",   # 공지사항 일반소식
+  "/ko/sub06_03_04_02.do",   # 정보공유 금오복덕방
+  "/ko/sub06_03_04_04.do",   # 정보공유 아르바이트정보
+  "/ko/sub06_03_05_01.do",   # 클래식감상
+  "/ko/sub06_03_05_02.do",  # 갤러리
+  "/ko/sub06_05_02.do",    # 총장임용후보자추천위원회 공지사항
+]
+
+# 크롤링 안전장치
+max_pages: 300000
+request_timeout_sec: 10
+request_sleep_sec: 0.7          # robots.txt의 crawl-delay와 비교해 큰 값을 사용
+user_agent: "KITBot (CSEcapstone, contact: cdh5113@naver.com)"
+
+# 저장소: filesystem | mongodb
+storage: "filesystem"
+
+# # MongoDB (storage: mongodb 일 때 사용)
+# mongodb_uri: "mongodb://localhost:27017"
+# mongodb_db: "kitbot"
+
+# 로그
+log_path: "../data/errors.log"
+
+pii_policy:
+  redact_email: true
+
+block_login_pages: true
+attachment_policy: "blocklist"
+
+# 크롤링하지 않는 주소
+deny_patterns:
+  - "/login"
+  - "/restaurant_menu_reg"
+  - "/restaurant_reg"

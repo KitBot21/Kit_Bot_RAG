@@ -1,0 +1,46 @@
+domain: "www.kumoh.ac.kr"
+start_url: null
+sitemap_index: "https://www.kumoh.ac.kr/sitemap_index.xml"
+
+# 전체 섹션 크롤링
+allow_sections: ["ko", "bus", "dorm"]
+
+# 로그인 페이지 차단
+block_login_pages: true
+
+# 첨부파일 다운로드 (MinIO 저장)
+attachment_policy: "metadata_only"  # 메타데이터만 (파일은 MinIO에서 관리)
+attachment_allow_prefixes: []
+attachment_block_prefixes: []
+
+# ⭐ 전체 사이트 크롤링을 위해 allowed_path_prefixes를 null로 설정
+# 이렇게 하면 allow_sections에 있는 모든 페이지를 크롤링합니다
+allowed_path_prefixes: null
+
+# 크롤링 안전장치
+max_pages: 50000  # 전체 크롤링을 위해 증가
+request_timeout_sec: 10
+request_sleep_sec: 0.7
+user_agent: "KITBot (CSEcapstone, contact: cdh5113@naver.com)"
+
+# 저장소
+storage: "filesystem"
+
+# 로그
+log_path: "../data/full_crawl_errors.log"
+
+# PII 정책
+pii_policy:
+  redact_email: true
+
+# 크롤링 제외 패턴
+deny_patterns:
+  - "/login"
+  - "/logout"
+  - "/mypage"
+  - "/admin"
+  - "/restaurant_menu_reg"
+  - "/restaurant_reg"
+  - "/fileDownload.do"  # 파일 다운로드는 MinIO에서 관리
+  - "/print"
+  - "/popup"
