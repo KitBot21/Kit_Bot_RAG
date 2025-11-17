@@ -37,3 +37,5 @@ data/corpus_zip_attachments_clean.csv
 data/corpus_minio_documents.csv
 data/ground_truth_*.csv
 data/*.csv
+minio
+embeddings/bge_all.npy
