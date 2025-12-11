@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIT Bot - 금오공대 AI 챗봇</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4A90E2;
+            --secondary-color: #50C878;
+            --danger-color: #E74C3C;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --user-msg-bg: #4A90E2;
+            --bot-msg-bg: #F0F0F0;
+            --border-radius: 12px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 헤더 */
+        .header {
+            background: var(--bg-gradient);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .bot-icon {
+            font-size: 36px;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 채팅 영역 */
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #FAFAFA;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #F0F0F0;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #CCC;
+            border-radius: 4px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: #AAA;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .message-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 8px;
+        }
+
+        .context-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #E0E0E0;
+        }
+
+        .context-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .context-item {
+            font-size: 11px;
+            color: #888;
+            padding: 6px 10px;
+            background: #F5F5F5;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .context-title-text {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .similarity-badge {
+            background: var(--secondary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        /* 입력 영역 */
+        .input-area {
+            padding: 25px 30px;
+            background: white;
+            border-top: 1px solid #E0E0E0;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #queryInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #queryInput:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        #sendBtn {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        #sendBtn:hover:not(:disabled) {
+            background: #3A7BC8;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        #sendBtn:disabled {
+            background: #CCC;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 로딩 애니메이션 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 빈 상태 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state-subtext {
+            font-size: 14px;
+            color: #BBB;
+        }
+
+        .sample-queries {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sample-query {
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #E0E0E0;
+            text-align: left;
+        }
+
+        .sample-query:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .sample-query-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .sample-query-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .container {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header-title h1 {
+                font-size: 22px;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .sample-queries {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-title">
+                <span class="bot-icon">🤖</span>
+                <div>
+                    <h1>KIT Bot</h1>
+                    <div class="header-subtitle">금오공과대학교 AI 챗봇 · RAG 시스템</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-clear" onclick="clearChat()">
+                    <span>🗑️</span> 대화 삭제
+                </button>
+            </div>
+        </div>
+
+        <!-- 채팅 영역 -->
+        <div class="chat-area" id="chatArea">
+            <div class="empty-state">
+                <div class="empty-state-icon">💬</div>
+                <div class="empty-state-text">무엇을 도와드릴까요?</div>
+                <div class="empty-state-subtext">금오공과대학교에 관한 질문을 해보세요</div>
+                
+                <div class="sample-queries">
+                    <div class="sample-query" onclick="sendSampleQuery('생활관 식사 시간 알려주세요')">
+                        <div class="sample-query-icon">🍽️</div>
+                        <div class="sample-query-text">생활관 식사 시간 알려주세요</div>
+                    </div>
+                    <div class="sample-query" onclick="sendSampleQuery('통학버스 노선 정보 주세요')">
+                        <div class="sample-query-icon">🚌</div>
+                        <div class="sample-query-text">통학버스 노선 정보 주세요</div>
+                    </div>
+                    <div class="sample-query" onclick="sendSampleQuery('전공 변경 어떻게 하나요?')">
+                        <div class="sample-query-icon">📚</div>
+                        <div class="sample-query-text">전공 변경 어떻게 하나요?</div>
+                    </div>
+                    <div class="sample-query" onclick="sendSampleQuery('도서관 운영 시간 궁금해요')">
+                        <div class="sample-query-icon">📖</div>
+                        <div class="sample-query-text">도서관 운영 시간 궁금해요</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 입력 영역 -->
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="queryInput" 
+                    placeholder="질문을 입력하세요... (예: 생활관 식사 시간 알려주세요)"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="btn" id="sendBtn" onclick="sendMessage()">
+                    <span id="sendBtnText">전송</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isLoading = false;
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function addMessage(type, text, contexts = null) {
+            const chatArea = document.getElementById('chatArea');
+            
+            // 빈 상태 제거
+            const emptyState = chatArea.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            let contextHTML = '';
+            if (contexts && contexts.length > 0) {
+                contextHTML = `
+                    <div class="context-info">
+                        <div class="context-title">
+                            <span>📄</span> 참고 문서 (${contexts.length}개)
+                        </div>
+                        ${contexts.map(ctx => `
+                            <div class="context-item">
+                                <span class="context-title-text" title="${ctx.title}">${ctx.title}</span>
+                                <span class="similarity-badge">${(ctx.similarity * 100).toFixed(0)}%</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-text">${text}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                    ${contextHTML}
+                </div>
+            `;
+
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const sendBtn = document.getElementById('sendBtn');
+            const sendBtnText = document.getElementById('sendBtnText');
+            const queryInput = document.getElementById('queryInput');
+            
+            if (loading) {
+                sendBtn.disabled = true;
+                queryInput.disabled = true;
+                sendBtnText.innerHTML = '<div class="loading"></div>';
+            } else {
+                sendBtn.disabled = false;
+                queryInput.disabled = false;
+                sendBtnText.textContent = '전송';
+            }
+        }
+
+        async function sendMessage() {
+            if (isLoading) return;
+
+            const queryInput = document.getElementById('queryInput');
+            const query = queryInput.value.trim();
+
+            if (!query) {
+                showToast('질문을 입력해주세요');
+                return;
+            }
+
+            // 사용자 메시지 표시
+            addMessage('user', query);
+            queryInput.value = '';
+            setLoading(true);
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    addMessage('bot', data.answer, data.contexts);
+                } else {
+                    addMessage('bot', `❌ 오류: ${data.error}`);
+                    showToast('오류가 발생했습니다');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('bot', '❌ 서버 연결에 실패했습니다. 나중에 다시 시도해주세요.');
+                showToast('서버 연결 실패');
+            } finally {
+                setLoading(false);
+                queryInput.focus();
+            }
+        }
+
+        function sendSampleQuery(query) {
+            document.getElementById('queryInput').value = query;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !isLoading) {
+                sendMessage();
+            }
+        }
+
+        async function clearChat() {
+            if (!confirm('대화 내역을 모두 삭제하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const chatArea = document.getElementById('chatArea');
+                    chatArea.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <div class="empty-state-text">무엇을 도와드릴까요?</div>
+                            <div class="empty-state-subtext">금오공과대학교에 관한 질문을 해보세요</div>
+                            
+                            <div class="sample-queries">
+                                <div class="sample-query" onclick="sendSampleQuery('생활관 식사 시간 알려주세요')">
+                                    <div class="sample-query-icon">🍽️</div>
+                                    <div class="sample-query-text">생활관 식사 시간 알려주세요</div>
+                                </div>
+                                <div class="sample-query" onclick="sendSampleQuery('통학버스 노선 정보 주세요')">
+                                    <div class="sample-query-icon">🚌</div>
+                                    <div class="sample-query-text">통학버스 노선 정보 주세요</div>
+                                </div>
+                                <div class="sample-query" onclick="sendSampleQuery('전공 변경 어떻게 하나요?')">
+                                    <div class="sample-query-icon">📚</div>
+                                    <div class="sample-query-text">전공 변경 어떻게 하나요?</div>
+                                </div>
+                                <div class="sample-query" onclick="sendSampleQuery('도서관 운영 시간 궁금해요')">
+                                    <div class="sample-query-icon">📖</div>
+                                    <div class="sample-query-text">도서관 운영 시간 궁금해요</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    showToast('대화 내역이 삭제되었습니다');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('삭제 실패');
+            }
+        }
+
+        // 페이지 로드 시 입력창에 포커스
+        window.addEventListener('load', () => {
+            document.getElementById('queryInput').focus();
+        });
+    </script>
+</body>
+</html>

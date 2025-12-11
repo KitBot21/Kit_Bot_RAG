@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/home/jhlee/Kit_Bot_RAG/scripts/extract_minio_documents.py", line 16, in <module>
+    from pdfminer.high_level import extract_text as extract_pdf_text
+ModuleNotFoundError: No module named 'pdfminer'
