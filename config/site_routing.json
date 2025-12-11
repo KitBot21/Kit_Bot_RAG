@@ -1,0 +1,14 @@
+[
+  {
+    "site": "대구통학버스",
+    "site_key": "bus",
+    "keywords_any": ["통학버스", "대구통학버스", "셔틀버스", "통학 버스"],
+    "exclude_keywords_any": ["수강꾸러미", "학사일정"]
+  },
+  {
+    "site": "www",
+    "site_key": "main",
+    "keywords_any": ["수강꾸러미", "학사일정", "등록금", "휴학", "복학", "계절수업"],
+    "exclude_keywords_any": ["통학버스", "셔틀버스"]
+  }
+]
